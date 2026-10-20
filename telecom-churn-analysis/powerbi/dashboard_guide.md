@@ -11,7 +11,7 @@ measures, and lay out an interactive report for business stakeholders.
    from MySQL's official site if you don't already have it.
 2. In Power BI Desktop: `Get Data` → `More...` → search **MySQL database**.
 3. Enter:
-   - Server: `localhost:3306` (or your server address)
+   - Server: `localhost:3307` (match `MYSQL_PORT` in `python/data_cleaning_eda.py`; MySQL's default is 3306)
    - Database: `telecom_churn_db`
 4. Choose **Import** mode (simplest for a project like this; use DirectQuery only if the
    data is huge or needs to always be live).

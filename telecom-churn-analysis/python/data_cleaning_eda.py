@@ -21,8 +21,11 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sqlalchemy import create_engine
 
-RAW_CSV_PATH = "telecom_churn.csv"
-EDA_OUTPUT_DIR = "eda_outputs"
+# Paths are resolved relative to this file, so the script works from any directory
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+RAW_CSV_PATH = os.path.join(BASE_DIR, "..", "data", "telecom_churn.csv")
+CLEAN_CSV_PATH = os.path.join(BASE_DIR, "..", "data", "telecom_churn_clean.csv")
+EDA_OUTPUT_DIR = os.path.join(BASE_DIR, "eda_outputs")
 
 MYSQL_USER = "root"
 MYSQL_PASSWORD = ""
@@ -160,5 +163,5 @@ df.to_sql("customers", con=engine, if_exists="replace", index=False, chunksize=1
 print(f"\nLoaded {len(df)} rows into MySQL table `{MYSQL_DB}.customers`")
 
 # Also save the cleaned data as a CSV backup, useful if MySQL isn't reachable
-df.to_csv("../telecom_churn_clean.csv", index=False)
-print("Clean CSV backup saved to ../telecom_churn_clean.csv")
+df.to_csv(CLEAN_CSV_PATH, index=False)
+print(f"Clean CSV backup saved to {CLEAN_CSV_PATH}")
