@@ -1,0 +1,4 @@
+pandas>=2.0
+sqlalchemy>=2.0
+pymysql>=1.1
+kaggle>=1.6
