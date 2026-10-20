@@ -22,15 +22,11 @@ CREATE TABLE customers (
     payment_method        VARCHAR(40),
     monthly_charges       DECIMAL(8,2),
     total_charges         DECIMAL(10,2),
-    churn                 VARCHAR(5),          
-    tenure_bucket         VARCHAR(20)          
+    churn                 VARCHAR(5),
+    tenure_bucket         VARCHAR(20)
 );
 
 CREATE INDEX idx_contract ON customers(contract);
 CREATE INDEX idx_churn ON customers(churn);
 CREATE INDEX idx_internet ON customers(internet_service);
 CREATE INDEX idx_tenure_bucket ON customers(tenure_bucket);
-
--- Quick sanity check after Python loads data
--- SELECT COUNT(*) FROM customers;
--- SELECT * FROM customers LIMIT 10;
