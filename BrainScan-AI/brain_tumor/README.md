@@ -224,14 +224,7 @@ BRAIN TUMOR DETECTION [END 2 END]/
 
 ## 🚀 Getting Started
 
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/shsarv/Machine-Learning-Projects.git
-cd "Machine-Learning-Projects/BRAIN TUMOR DETECTION [END 2 END]"
-```
-
-### 2. Set up environment
+### 1. Set up environment
 
 ```bash
 python -m venv venv
@@ -241,7 +234,7 @@ venv\Scripts\activate           # Windows
 pip install -r requirements.txt
 ```
 
-### 3. Run the application
+### 2. Run the application
 
 #### Option 1: Automatic Launcher (Recommended)
 ```bash
@@ -272,9 +265,7 @@ python app.py
 run.bat
 ```
 
-The app will be available at: **http://127.0.0.1:5000**
-
-### 4. Download & prepare the dataset
+### 3. Download & prepare the dataset
 
 The raw dataset is in `.mat` (MATLAB) format, split across 4 zip files on Figshare:
 
