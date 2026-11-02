@@ -260,11 +260,6 @@ pip install -r requirements.txt
 python app.py
 ```
 
-#### Option 4: Batch File (Windows)
-```bash
-run.bat
-```
-
 ### 3. Download & prepare the dataset
 
 The raw dataset is in `.mat` (MATLAB) format, split across 4 zip files on Figshare:
