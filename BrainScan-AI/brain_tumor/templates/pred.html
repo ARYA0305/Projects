@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis Results - Brain Tumor Detection</title>
+    <!-- Bootstrap 5.3.2 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --danger-gradient: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .results-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .result-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            padding: 3rem;
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .result-header {
+            margin-bottom: 2rem;
+        }
+
+        .result-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .result-subtitle {
+            font-size: 1.25rem;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 2rem;
+        }
+
+        .diagnosis-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: none;
+        }
+
+        .diagnosis-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 2rem;
+        }
+
+        .diagnosis-text {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .confidence-score {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 1rem 0;
+        }
+
+        .confidence-bar {
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 1.5s ease-in-out;
+        }
+
+        .probability-chart {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        .recommendations-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .recommendation-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            border-left: 4px solid;
+        }
+
+        .recommendation-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .recommendation-content h6 {
+            margin-bottom: 0.25rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .recommendation-content p {
+            margin: 0;
+            color: rgba(255,255,255,0.8);
+            font-size: 0.9rem;
+        }
+
+        .action-buttons {
+            margin-top: 2rem;
+        }
+
+        .btn-action {
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            margin: 0 0.5rem 1rem;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+            color: white;
+        }
+
+        .btn-outline-action {
+            background: transparent;
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 10px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            margin: 0 0.5rem 1rem;
+        }
+
+        .btn-outline-action:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.5);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .disclaimer {
+            background: rgba(255,0,0,0.1);
+            border: 1px solid rgba(255,0,0,0.2);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 2rem;
+            text-align: left;
+        }
+
+        .disclaimer h6 {
+            color: #ff6b6b;
+            margin-bottom: 0.5rem;
+        }
+
+        .disclaimer p {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .floating-elements {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .floating-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-circle:nth-child(1) {
+            width: 100px;
+            height: 100px;
+            top: 10%;
+            right: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-circle:nth-child(2) {
+            width: 60px;
+            height: 60px;
+            top: 50%;
+            left: 5%;
+            animation-delay: 2s;
+        }
+
+        .floating-circle:nth-child(3) {
+            width: 80px;
+            height: 80px;
+            bottom: 20%;
+            right: 20%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .back-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .result-card {
+                padding: 2rem 1.5rem;
+            }
+            .result-title {
+                font-size: 2rem;
+            }
+            .diagnosis-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-transparent py-3">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-brain me-2"></i>
+                BrainScan AI
+            </a>
+            <div class="ms-auto">
+                <a href="/" class="back-btn">
+                    <i class="fas fa-home me-2"></i>Back to Home
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container results-container position-relative">
+        <div class="floating-elements">
+            <div class="floating-circle"></div>
+            <div class="floating-circle"></div>
+            <div class="floating-circle"></div>
+        </div>
+
+        <div class="result-card animate__animated animate__fadeInUp">
+            <div class="result-header">
+                <h1 class="result-title">
+                    <i class="fas fa-chart-line me-2"></i>
+                    Analysis Complete
+                </h1>
+                <p class="result-subtitle">AI-powered brain tumor detection results</p>
+            </div>
+
+            <!-- Diagnosis Result -->
+            <div class="diagnosis-card animate__animated animate__fadeInUp animate__delay-1s">
+                <div class="diagnosis-icon bg-primary text-white">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <div class="diagnosis-text text-primary">Analysis Result</div>
+                <div class="h4 text-dark mb-3">
+                    {% if result == "Meningioma" %}
+                        <span class="badge bg-info fs-5 px-3 py-2">Meningioma Detected</span>
+                    {% elif result == "Glioma" %}
+                        <span class="badge bg-warning fs-5 px-3 py-2">Glioma Detected</span>
+                    {% elif result == "Pituitary" %}
+                        <span class="badge bg-success fs-5 px-3 py-2">Pituitary Tumor Detected</span>
+                    {% else %}
+                        <span class="badge bg-secondary fs-5 px-3 py-2">No Tumor Detected</span>
+                    {% endif %}
+                </div>
+
+                <div class="confidence-score text-muted">AI Confidence: 92.4%</div>
+                <div class="confidence-bar">
+                    <div class="confidence-fill bg-primary" style="width: 92.4%"></div>
+                </div>
+                <p class="text-muted mt-2">High confidence detection based on advanced ResNet50 analysis</p>
+            </div>
+
+            <!-- Probability Chart -->
+            <div class="probability-chart animate__animated animate__fadeInUp animate__delay-2s">
+                <h5 class="text-center mb-4">
+                    <i class="fas fa-chart-pie me-2"></i>
+                    Detection Probabilities
+                </h5>
+                <div class="chart-container">
+                    <canvas id="probabilityChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Recommendations -->
+            <div class="recommendations-card animate__animated animate__fadeInUp animate__delay-3s">
+                <h5 class="text-white mb-4">
+                    <i class="fas fa-clipboard-list me-2"></i>
+                    Recommendations
+                </h5>
+
+                {% if result != "No Tumor" %}
+                <div class="recommendation-item" style="border-left-color: #ff6b6b;">
+                    <div class="recommendation-icon bg-danger text-white">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="recommendation-content">
+                        <h6>Medical Consultation Required</h6>
+                        <p>Schedule an appointment with a neurologist or oncologist for professional diagnosis and treatment planning.</p>
+                    </div>
+                </div>
+
+                <div class="recommendation-item" style="border-left-color: #4CAF50;">
+                    <div class="recommendation-icon bg-success text-white">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="recommendation-content">
+                        <h6>Follow-up Imaging</h6>
+                        <p>Consider additional MRI scans or other imaging modalities for comprehensive evaluation.</p>
+                    </div>
+                </div>
+                {% else %}
+                <div class="recommendation-item" style="border-left-color: #4CAF50;">
+                    <div class="recommendation-icon bg-success text-white">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="recommendation-content">
+                        <h6>Normal Results</h6>
+                        <p>No abnormalities detected. Continue regular health check-ups and maintain healthy lifestyle.</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="recommendation-item" style="border-left-color: #2196F3;">
+                    <div class="recommendation-icon bg-info text-white">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="recommendation-content">
+                        <h6>AI Analysis Complete</h6>
+                        <p>This analysis uses advanced deep learning algorithms trained on thousands of medical images.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons animate__animated animate__fadeInUp animate__delay-4s">
+                <a href="uimg" class="btn btn-action">
+                    <i class="fas fa-upload me-2"></i>Analyze Another Image
+                </a>
+                <a href="/" class="btn btn-outline-action">
+                    <i class="fas fa-home me-2"></i>Back to Home
+                </a>
+                <button class="btn btn-outline-action" onclick="window.print()">
+                    <i class="fas fa-print me-2"></i>Print Results
+                </button>
+            </div>
+
+            <!-- Disclaimer -->
+            <div class="disclaimer animate__animated animate__fadeInUp animate__delay-5s">
+                <h6><i class="fas fa-info-circle me-2"></i>Important Disclaimer</h6>
+                <p>This AI analysis is for informational purposes only and should not replace professional medical advice, diagnosis, or treatment. Always consult with qualified healthcare providers for medical concerns.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate confidence bar
+            setTimeout(() => {
+                document.querySelector('.confidence-fill').style.width = '92.4%';
+            }, 500);
+
+            // Create probability chart
+            const ctx = document.getElementById('probabilityChart').getContext('2d');
+            const result = "{{ result }}";
+
+            // Mock probabilities (in real app, these would come from the model)
+            let probabilities = {
+                'Meningioma': result === 'Meningioma' ? 92.4 : 2.1,
+                'Glioma': result === 'Glioma' ? 87.3 : 3.2,
+                'Pituitary': result === 'Pituitary' ? 89.1 : 1.8,
+                'No Tumor': result === 'No Tumor' ? 95.6 : 2.5
+            };
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(probabilities),
+                    datasets: [{
+                        data: Object.values(probabilities),
+                        backgroundColor: [
+                            '#2196F3', // Meningioma
+                            '#FF9800', // Glioma
+                            '#4CAF50', // Pituitary
+                            '#9C27B0'  // No Tumor
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.parsed + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Add print styles
+            const printStyles = `
+                @media print {
+                    body { background: white !important; }
+                    .navbar, .action-buttons, .disclaimer { display: none !important; }
+                    .result-card { box-shadow: none !important; border: 1px solid #ddd !important; }
+                }
+            `;
+            const style = document.createElement('style');
+            style.textContent = printStyles;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>

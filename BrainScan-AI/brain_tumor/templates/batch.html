@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batch Upload - Brain Tumor Detection</title>
+    <!-- Bootstrap 5.3.2 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--primary-gradient);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .navbar {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .navbar-brand {
+            color: white !important;
+            font-weight: 600;
+            font-size: 1.5rem;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover {
+            color: white !important;
+            transform: translateY(-2px);
+        }
+
+        .upload-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .upload-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 3rem;
+            margin-top: 2rem;
+        }
+
+        .card-title {
+            color: white;
+            font-weight: 700;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        .upload-zone {
+            border: 3px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 3rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .upload-zone:hover {
+            border-color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .upload-zone.dragover {
+            border-color: #4CAF50;
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-subtext {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-list {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            display: none;
+        }
+
+        .file-list.active {
+            display: block;
+        }
+
+        .file-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .file-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .file-icon {
+            color: rgba(255, 255, 255, 0.7);
+            margin-right: 1rem;
+        }
+
+        .remove-file {
+            background: rgba(220, 53, 69, 0.3);
+            border: none;
+            color: #dc3545;
+            padding: 0.25rem 0.75rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .remove-file:hover {
+            background: rgba(220, 53, 69, 0.5);
+        }
+
+        .btn-upload {
+            background: var(--secondary-gradient);
+            border: none;
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-top: 1rem;
+            width: 100%;
+        }
+
+        .btn-upload:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+
+        .btn-upload:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .progress-container {
+            display: none;
+            margin-top: 2rem;
+        }
+
+        .progress-container.active {
+            display: block;
+        }
+
+        .progress {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: var(--success-gradient);
+        }
+
+        .status-text {
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .error-alert {
+            background: rgba(220, 53, 69, 0.2);
+            border: 1px solid rgba(220, 53, 69, 0.5);
+            border-radius: 10px;
+            padding: 1rem;
+            color: #ff6b6b;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .error-alert.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-brain"></i> Brain Tumor Detection
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Single Upload</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/batch-upload">Batch Upload</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="upload-container">
+        <div class="upload-card animate__animated animate__fadeIn">
+            <h1 class="card-title">
+                <i class="fas fa-file-upload"></i> Batch Upload
+            </h1>
+            <p class="card-subtitle">Upload multiple MRI images for analysis</p>
+
+            <div class="upload-zone" id="uploadZone">
+                <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                <p class="upload-text">Drag and drop images here or click to select</p>
+                <p class="upload-subtext">Supported formats: PNG, JPG, JPEG, GIF (Max 16MB per file)</p>
+                <input type="file" id="fileInput" class="file-input" multiple accept=".png,.jpg,.jpeg,.gif">
+            </div>
+
+            <div class="file-list" id="fileList">
+                <h5 style="color: rgba(255, 255, 255, 0.9); margin-bottom: 1rem;">
+                    <i class="fas fa-list"></i> Selected Files
+                </h5>
+                <div id="fileItems"></div>
+            </div>
+
+            <div class="error-alert" id="errorAlert"></div>
+
+            <button class="btn-upload" id="uploadBtn" disabled>
+                <i class="fas fa-upload"></i> Process Files
+            </button>
+
+            <div class="progress-container" id="progressContainer">
+                <div class="progress" style="height: 25px;">
+                    <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+                </div>
+                <p class="status-text" id="statusText">Processing: 0/0 files...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        const uploadZone = document.getElementById('uploadZone');
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
+        const fileItems = document.getElementById('fileItems');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressBar = document.getElementById('progressBar');
+        const statusText = document.getElementById('statusText');
+        const errorAlert = document.getElementById('errorAlert');
+
+        let selectedFiles = new DataTransfer();
+
+        // Drag and drop handlers
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadZone.addEventListener(eventName, () => {
+                uploadZone.classList.add('dragover');
+            });
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadZone.addEventListener(eventName, () => {
+                uploadZone.classList.remove('dragover');
+            });
+        });
+
+        uploadZone.addEventListener('drop', handleDrop);
+        uploadZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', handleFileSelect);
+
+        function handleDrop(e) {
+            const files = e.dataTransfer.files;
+            handleFiles(files);
+        }
+
+        function handleFileSelect(e) {
+            handleFiles(e.target.files);
+        }
+
+        function handleFiles(files) {
+            errorAlert.classList.remove('active');
+            
+            for (let file of files) {
+                if (selectedFiles.items.length < 50) {
+                    selectedFiles.items.add(file);
+                }
+            }
+            
+            if (selectedFiles.items.length > 50) {
+                showError('Maximum 50 files allowed');
+                while (selectedFiles.items.length > 50) {
+                    selectedFiles.items.remove(selectedFiles.items.length - 1);
+                }
+            }
+
+            displayFiles();
+        }
+
+        function displayFiles() {
+            fileItems.innerHTML = '';
+            
+            if (selectedFiles.items.length === 0) {
+                fileList.classList.remove('active');
+                uploadBtn.disabled = true;
+            } else {
+                fileList.classList.add('active');
+                uploadBtn.disabled = false;
+
+                for (let i = 0; i < selectedFiles.items.length; i++) {
+                    const file = selectedFiles.items[i].getAsFile();
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'file-item';
+                    fileItem.innerHTML = `
+                        <span>
+                            <i class="fas fa-image file-icon"></i>
+                            ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)
+                        </span>
+                        <button class="remove-file" onclick="removeFile(${i})">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                    `;
+                    fileItems.appendChild(fileItem);
+                }
+            }
+        }
+
+        function removeFile(index) {
+            selectedFiles.items.remove(index);
+            displayFiles();
+        }
+
+        function showError(message) {
+            errorAlert.textContent = message;
+            errorAlert.classList.add('active');
+        }
+
+        uploadBtn.addEventListener('click', async () => {
+            uploadBtn.disabled = true;
+            progressContainer.classList.add('active');
+            errorAlert.classList.remove('active');
+
+            const formData = new FormData();
+            for (let i = 0; i < selectedFiles.items.length; i++) {
+                formData.append('files[]', selectedFiles.items[i].getAsFile());
+            }
+
+            try {
+                const response = await fetch('/batch-upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    // Redirect to results page
+                    const html = await response.text();
+                    document.open();
+                    document.write(html);
+                    document.close();
+                } else {
+                    showError('Error processing files. Please try again.');
+                    uploadBtn.disabled = false;
+                    progressContainer.classList.remove('active');
+                }
+            } catch (error) {
+                showError('Network error: ' + error.message);
+                uploadBtn.disabled = false;
+                progressContainer.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
