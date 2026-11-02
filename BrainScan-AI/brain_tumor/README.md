@@ -370,20 +370,7 @@ python test.py --image path/to/mri_scan.jpg
   number  = {6},
   year    = {2016}
 }
-```
-
-**Further reading:**
-- [Jun Cheng Brain Tumor Dataset — Figshare](https://figshare.com/articles/dataset/brain_tumor_dataset/1512427)
-- [Deep Residual Learning for Image Recognition — He et al. (2015)](https://arxiv.org/abs/1512.03385)
-- [A survey on deep learning in medical image analysis — Litjens et al. (2017)](https://www.sciencedirect.com/science/article/pii/S1361841517301135)
-- [PyTorch Transfer Learning Tutorial](https://pytorch.org/tutorials/beginner/transfer_learning_tutorial.html)
-
----
 
 <div align="center">
-
-Part of the [Machine Learning Projects](https://github.com/shsarv/Machine-Learning-Projects) collection by [Sarvesh Kumar Sharma](https://github.com/shsarv)
-
-⭐ Star the main repo if this helped you!
 
 </div>
